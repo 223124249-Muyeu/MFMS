@@ -1,52 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "suppliers.h"
-
-int main() {
-    int supplierIds[10];
-    char supplierNames[10][120];
-    char emails[10][120];
-    char phones[10][25];
-    char towns[10][40];
-    int count = 0;
-    int choice;
-
-    do {
-        displayMenu();
-        scanf("%d", &choice);
-        while (getchar() != '\n');
-
-        switch(choice) {
-            case 1:
-                addSupplier(supplierIds, supplierNames, emails, phones, towns, &count);
-                break;
-            case 2:
-                displaySupplier(supplierIds, supplierNames, emails, phones, towns, count);
-                break;
-            case 3:
-                searchSupplier(supplierIds, supplierNames, emails, phones, towns, count);
-                break;
-            case 4:
-                printf("\nExiting program. Goodbye!\n");
-                break;
-            default:
-                printf("\nInvalid choice. Please enter a number between 1 and 4.\n");
-        }
-    } while (choice != 4);
-    
-    return 0;
-}
-
-void displayMenu() {
-    printf("\n=================================\n");
-    printf(" MUNICIPAL FINANCIAL MANAGEMENT\n");
-    printf("=================================\n");
-    printf("1. Add a supplier\n");
-    printf("2. Display suppliers\n");
-    printf("3. Search for supplier\n");
-    printf("4. Exit\n");
-    printf("Enter choice (1-4): ");
-}
+#include "validation.h"
 
 void addSupplier(int ids[], char names[][120], char emails[][120], char phones[][25], char towns[][40], int *count) {
     if (*count >= 10) {
@@ -54,9 +9,19 @@ void addSupplier(int ids[], char names[][120], char emails[][120], char phones[]
         return;
     }
     
-    printf("\nEnter supplier ID: ");
-    scanf("%d", &ids[*count]);
-    while (getchar() != '\n');
+    int duplicate;
+    do {
+        duplicate = 0;
+        ids[*count] = readInt("Enter supplier ID: ", 1, 9999);
+
+        for (int i = 0; i < *count; i++) {
+            if (ids[i] == ids[*count]) {
+                printf("Error: Supplier ID already exists. Try again.\n");
+                duplicate = 1;
+                break;
+            }
+        }
+    } while (duplicate);
 
     do {
         printf("Enter supplier's name: ");
