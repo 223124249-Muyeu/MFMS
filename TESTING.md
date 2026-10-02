@@ -44,7 +44,7 @@ Build: PASS, no warnings
 | ID | Test | Result |
 |----|------|--------|
 | I1 | main.c + validation.c + suppliers.c | FAIL: multiple definition of main and displayMenu (suppliers.c defines both) |
-| I2 | main.c + validation.c + employees.c | [FILL IN after re-running the build] |
+| I2 | main.c + validation.c + employees.c | PASS: links with no warnings (employees not yet called from the menu) |
 | I3 | Menu options 1-5 call real modules | FAIL: placeholders only |
 
 ## Issues to fix
@@ -57,6 +57,6 @@ Build: PASS, no warnings
 budget.c, assets.c, reports.c (Students 2, 4, 5)
 
 ## Not yet tested
-Employee: empty department, ID of 0 or below.
-Supplier: 
-Budget, assets and reports once they exist 
+Employee.
+Supplier. 
+Budget, assets and reports once they exist.
