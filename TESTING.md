@@ -1,11 +1,12 @@
 # MFMS Test Log
 
 Tester: Redemptus Muyeu (223124249), Student 7
-Date: 2-3 October 2026
+Date: 2-4 October 2026
 Strict build flags: -std=c99 -Wall -Wextra -pedantic
 Only results actually observed are recorded as PASS or FAIL.
 
-## Employees (employees.c + test_employee.c) - owner: Student 1
+## Employees (employees.c) - owner: Student 1
+First test (2 October)
 | ID | Test | Result |
 |----|------|--------|
 | E1 | Add valid employee | PASS |
@@ -17,6 +18,16 @@ Only results actually observed are recorded as PASS or FAIL.
 | E4 | Duplicate ID | FAIL: second ID 1 accepted |
 | X2 | Text typed for ID | FAIL: name and department prompts skipped |
 
+Re-test (4 October, commit 8900bec)
+| ID | Test | Result |
+|----|------|--------|
+| E4b | Duplicate ID | PASS: "ID 101 is already used", asks again |
+| X2b | Letters typed for ID | PASS: "please enter a whole number", asks again |
+| E9 | Negative or letter salary | PASS: both rejected |
+| E8b | Salary total (40000+20000+15000) | PASS: 75000.00 |
+| E10 | No scanf or getchar left in the module | PASS: uses readInt, readString, readDouble |
+Note: the old test_employee.c still reads its own menu with scanf, so it can show "input cannot be empty" after a menu choice. This affects only that test file, not employees.c.
+
 ## Menu (main.c + validation.c) - owner: Student 6
 Build: PASS, no warnings
 | ID | Test | Result |
@@ -26,10 +37,20 @@ Build: PASS, no warnings
 | M3 | abc | PASS (error, asks again) |
 | M4 | Empty input | PASS (error, asks again) |
 | M5 | Exit (6) | PASS |
-Note: options 1-5 are placeholders and not connected to the modules.
+Note: options 1-5 are placeholders and are not connected to the modules.
 
-## Suppliers (suppliers.c, built alone) - owner: Student 3
-Build: PASS, no warnings
+## Validation helpers (validation.c, tested with test_validation.c) - Student 6 / Student 7
+| ID | Test | Result |
+|----|------|--------|
+| V1 | readInt: 5 | PASS: accepted |
+| V2 | readInt: 0 and 11 | PASS: "enter a number between 1 and 10" |
+| V3 | readInt: abc and 3.5 | PASS: "please enter a whole number" |
+| V4 | readInt: empty line | PASS: "input cannot be empty" |
+| V5 | readDouble: negative number and letters | PASS: both rejected |
+| V6 | readString: empty and too-long text | PASS: both rejected |
+
+## Suppliers (suppliers.c) - owner: Student 3
+First test
 | ID | Test | Result |
 |----|------|--------|
 | S1 | Add valid | PASS |
@@ -39,54 +60,57 @@ Build: PASS, no warnings
 | S6 | Search with no suppliers | PASS |
 | S7 | Duplicate ID | FAIL: second ID 1 accepted |
 | S8 | Letters at menu | FAIL: previous choice reused |
+| I1 | Linked with main.c | FAIL: multiple definition of main and displayMenu |
 
-### Suppliers re-test (3 October 2026, after Student 3's update)
+Re-test (3 October, after Student 3's update)
 | ID | Test | Result |
 |----|------|--------|
-| S7b | Duplicate ID | PASS: "Supplier ID already exists" shown, asks again |
-| S8b | Letters typed for ID | PASS: "please enter a whole number", asks again (now uses readInt) |
+| S7b | Duplicate ID | PASS: "Supplier ID already exists", asks again |
+| S8b | Letters typed for ID | PASS: asks again (now uses readInt) |
+| I1b | Linked with main.c | PASS: main() clash removed |
 Note: suppliers.c now needs validation.c to link.
 
-## Budget (budget.c) - owner: Student 2 
-Build: FAIL: missing closing brace at end of loadBudgetsFromFile ("expected declaration or statement at end of input")
-Tests below were run on a scratch copy with only that one brace added; the repo file was not changed.
+## Budget (budget.c) - owner: Student 2
+First test: build FAIL (missing closing brace at the end of loadBudgetsFromFile)
+Logic tested on a scratch copy with that one brace added:
 | ID | Test | Result |
 |----|------|--------|
-| B1 | Add department, then expenditure over the allocation | PASS: remaining -59000.00, status EXCEEDED |
-| B2 | Over-budget list | PASS: "Health exceeded by 59000.00" |
-| B3 | Totals (allocated, expenditure, count) | PASS |
-| B4 | Duplicate department name | PASS: rejected |
-| B5 | Empty department name | PASS: rejected |
-| B6 | Name typed after a menu choice | FAIL: getchar() before fgets removes the first letter ("Health" stored as "ealth") |
-| B7 | Letters typed for amount | FAIL: scanf fails silently, wrong message "No negative salary/budget!" |
+| B1 | Expenditure over the allocation | PASS: EXCEEDED |
+| B2 | Over-budget list, totals | PASS |
+| B4 | Duplicate and empty department name | PASS: rejected |
+| B6 | Name typed after a menu choice | FAIL: getchar() removed the first letter ("Health" stored as "ealth") |
+| B7 | Letters typed for amount | FAIL: scanf failed silently, wrong message |
 
-## Assets (assets.c) - owner: Student 4 
-Build: PASS, no warnings
+Re-test (3 October, commit 9c90290)
 | ID | Test | Result |
 |----|------|--------|
-| A1 | Link a caller that uses searchAssets() | FAIL: undefined reference (assets.h declares searchAssets, assets.c defines searchAsset) |
-| A2 | Add an asset | FAIL: no add function exists |
-| A3 | Search input uses raw scanf | Not yet tested; same risk as employees |
+| B0 | Compiles with strict flags | PASS |
+| B6b | Name with a space ("Health Dept") | PASS: kept intact |
+| B7b | Letters typed for amount | PASS: "please enter a valid number", asks again |
+| B8 | 50000 allocated, 60000 spent | PASS: EXCEEDED, 10000.00 over |
+
+## Assets (assets.c) - owner: Student 4
+First test: build PASS
+| ID | Test | Result |
+|----|------|--------|
+| A1 | Link a caller that uses searchAssets() | FAIL: header said searchAssets, code defined searchAsset |
+| A2 | Add an asset | FAIL: no add function existed |
+
+Re-test (3 October, commit ea0f0aa)
+| ID | Test | Result |
+|----|------|--------|
+| A1b | Function names match | PASS |
+| A2b | Add an asset, duplicate ID rejected | PASS |
+| A3 | Display, search found and not found | PASS |
+| A4 | Letters typed for an ID | PASS: asks again |
 
 ## Integration
 | ID | Test | Result |
 |----|------|--------|
-| I1 | main.c + validation.c + suppliers.c | PASS (re-test 3 Oct): main() clash removed, links with no warnings |
-| I2 | main.c + validation.c + employees.c | PASS: links with no warnings (employees not yet called from the menu) |
-| I3 | Menu options 1-5 call real modules | FAIL: placeholders only |
-| I4 | All modules together (main, validation, employees, suppliers, assets, budget) | PASS only with the budget.c brace added on a scratch copy; the repo version does not compile |
+| I2 | main, validation, employees, suppliers, budget, assets built together | PASS: no warnings |
+| I3 | Menu options 1-5 call real modules | FAIL: placeholders only (Student 6) |
+| I4 | Reports module present | FAIL: reports.c not yet submitted (Student 5) |
 
-## Issues to fix
-1. budget.c: add the missing closing brace (Student 2)
-2. budget.c: remove getchar() before fgets in enterBudget and enterExpenditure; use readDouble for amounts (Student 2)
-3. assets.c / assets.h: make searchAsset and searchAssets the same name; add an addAsset function (Student 4)
-4. Menu not connected to modules (Student 6)
-5. Duplicate IDs accepted in employees (Student 1); fixed in suppliers
-6. Input not checked for letters in employees (Student 1); fixed in suppliers
-
-## Not yet in the repo
-reports.c (Student 5)
-
-## Not yet tested
-Employee and supplier input after the menu is connected.
-Reports once it exists.
+## Issues still open
+1. Menu options 1-5 are not connected to the modules (Student 6).
+2. reports.c has not been submitted (Student 5).
