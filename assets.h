@@ -11,7 +11,8 @@ typedef struct
     char condition[30];
 } Asset;
 
+void addAsset(Asset assets[], int *assetCount);
 void displayAssets(Asset assets[], int assetCount);
-void searchAssets(Asset assets[], int assetCount);
+void searchAsset(Asset assets[], int assetCount);
 
 #endif
