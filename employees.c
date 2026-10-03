@@ -1,70 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "employees.h"
-
-/* clear the input buffer */
-static void clearInput(void)
-{
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF)
-        ;
-}
-
-/* read a string safely */
-static void readLine(const char *prompt, char *buffer, int size)
-{
-    printf("%s", prompt);
-    if (fgets(buffer, size, stdin) != NULL)
-    {
-        size_t len = strlen(buffer);
-        if (len > 0 && buffer[len - 1] == '\n')
-            buffer[len - 1] = '\0';
-    }
-}
-
-/* read a number and re-ask if invalid */
-static int readIntSafe(const char *prompt)
-{
-    int value;
-    int result;
-
-    while (1)
-    {
-        printf("%s", prompt);
-        result = scanf("%d", &value);
-
-        if (result == 1)
-        {
-            clearInput();
-            return value;
-        }
-
-        printf("Invalid input. Please enter a number.\n");
-        clearInput();
-    }
-}
-
-/* read a positive float */
-static float readFloatSafe(const char *prompt)
-{
-    float value;
-    int result;
-
-    while (1)
-    {
-        printf("%s", prompt);
-        result = scanf("%f", &value);
-
-        if (result == 1 && value >= 0)
-        {
-            clearInput();
-            return value;
-        }
-
-        printf("Invalid input. Enter a non-negative number.\n");
-        clearInput();
-    }
-}
+#include "validation.h"
 
 void addEmployee(Employee employees[], int *count)
 {
@@ -75,16 +12,16 @@ void addEmployee(Employee employees[], int *count)
     if (*count >= MAX_EMPLOYEES)
     {
         printf("\nEmployee storage is full.\n");
+        pauseScreen();
         return;
     }
 
     printf("\n===== ADD EMPLOYEE =====\n");
 
-    /* keep asking until a unique ID is given */
     do
     {
         duplicate = 0;
-        id = readIntSafe("Enter employee ID: ");
+        id = readInt("Enter employee ID: ", 1, 999999);
 
         for (i = 0; i < *count; i++)
         {
@@ -100,12 +37,12 @@ void addEmployee(Employee employees[], int *count)
     Employee newEmployee;
     newEmployee.id = id;
 
-    readLine("Enter employee name: ", newEmployee.name, 50);
-    readLine("Enter department: ", newEmployee.department, 50);
+    readString("Enter employee name: ", newEmployee.name, 50);
+    readString("Enter department: ", newEmployee.department, 50);
 
-    newEmployee.basicSalary        = readFloatSafe("Enter basic salary: ");
-    newEmployee.housingAllowance   = readFloatSafe("Enter housing allowance: ");
-    newEmployee.transportAllowance = readFloatSafe("Enter transport allowance: ");
+    newEmployee.basicSalary        = (float)readDouble("Enter basic salary: ", 0);
+    newEmployee.housingAllowance   = (float)readDouble("Enter housing allowance: ", 0);
+    newEmployee.transportAllowance = (float)readDouble("Enter transport allowance: ", 0);
 
     employees[*count] = newEmployee;
     (*count)++;
@@ -122,10 +59,11 @@ void searchEmployee(Employee employees[], int count)
     if (count == 0)
     {
         printf("\nNo employees have been added yet.\n");
+        pauseScreen();
         return;
     }
 
-    searchID = readIntSafe("\nEnter employee ID to search: ");
+    searchID = readInt("\nEnter employee ID to search: ", 1, 999999);
 
     for (i = 0; i < count; i++)
     {
@@ -148,7 +86,6 @@ void searchEmployee(Employee employees[], int count)
     }
 }
 
-/* search by name - uses strcmp */
 void searchEmployeeByName(Employee employees[], int count)
 {
     char searchName[50];
@@ -158,16 +95,11 @@ void searchEmployeeByName(Employee employees[], int count)
     if (count == 0)
     {
         printf("\nNo employees have been added yet.\n");
+        pauseScreen();
         return;
     }
 
-    printf("Enter employee name to search: ");
-    if (fgets(searchName, 50, stdin) != NULL)
-    {
-        size_t len = strlen(searchName);
-        if (len > 0 && searchName[len - 1] == '\n')
-            searchName[len - 1] = '\0';
-    }
+    readString("Enter employee name to search: ", searchName, 50);
 
     for (i = 0; i < count; i++)
     {
@@ -194,6 +126,7 @@ void displayEmployees(Employee employees[], int count)
     if (count == 0)
     {
         printf("\nNo employees have been added yet.\n");
+        pauseScreen();
         return;
     }
 
