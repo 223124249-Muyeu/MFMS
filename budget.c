@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "budget.h"
+#include "validation.h"
 
 struct Budget budgets[MAX_DEPTS];
 int budgetCount = 0;
@@ -19,25 +20,14 @@ void enterBudget() {
         printf("Limit reached!\n"); return;
     }
     struct Budget b;
-    printf("\nDept Name: ");
-    getchar();
-    fgets(b.deptName, 30, stdin);
-    b.deptName[strcspn(b.deptName, "\n")] = 0;
-
-    if(strlen(b.deptName) == 0) {
-        printf("Error: Empty name not allowed!\n"); return;
-    }
-    // duplicate check using strcmp()
+    readString("\nDept Name: ", b.deptName, sizeof(b.deptName));
+   
     for(int i=0; i<budgetCount; i++) {
         if(strcmp(budgets[i].deptName, b.deptName)==0) {
             printf("Error: Duplicate department! Use Expenditure.\n"); return;
         }
     }
-    printf("Allocated Budget: ");
-    scanf("%f", &b.allocated);
-    if(b.allocated <= 0) {
-        printf("Error: No negative salary/budget!\n"); return;
-    }
+    b.allocated = (float)readDouble("Allocated Budget: ", 0.01);
     b.expenditure = 0;
     b.remaining = b.allocated;
     strcpy(b.status, "WITHIN BUDGET");
@@ -46,12 +36,9 @@ void enterBudget() {
 }
 
 void enterExpenditure() {
-    char name[30];
+    char name[50];
     float amt;
-    printf("\nDept Name: ");
-    getchar();
-    fgets(name, 30, stdin);
-    name[strcspn(name, "\n")] = 0;
+    readString("\nDept Name: ", name, sizeof(name));
 
     int found = -1;
     for(int i=0; i<budgetCount; i++) {
@@ -59,9 +46,7 @@ void enterExpenditure() {
     }
     if(found==-1) { printf("Not found! Add budget first.\n"); return; }
 
-    printf("Expenditure Amount: ");
-    scanf("%f", &amt);
-    if(amt <= 0) { printf("Error: No negative!\n"); return; }
+    amt = (float)readDouble("Expenditure Amount: ", 0.01);
 
     budgets[found].expenditure += amt;
     calculateBudget(found);
@@ -91,7 +76,7 @@ void listOverBudget() {
     if(c==0) printf("All WITHIN BUDGET\n");
 }
 
-// Helpers for Reports Student
+
 float getRemainingByDept(char* dept) {
     for(int i=0; i<budgetCount; i++)
         if(strcmp(budgets[i].deptName, dept)==0) return budgets[i].remaining;
@@ -105,7 +90,7 @@ float getTotalExpenditure() {
 }
 int getBudgetCount() { return budgetCount; }
 
-// For Student 6 integration
+
 void saveBudgetsToFile() {
     FILE *f = fopen("data/budget.txt","w");
     if(!f) return;
@@ -122,3 +107,4 @@ void loadBudgetsFromFile() {
         budgetCount++;
     }
     fclose(f);
+}
