@@ -6,6 +6,7 @@
 #include "assets.h"
 #include "reports.h"
 
+
 #define MAX_SUPPLIERS 10
 #define MAX_ASSETS    100
 
