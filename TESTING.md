@@ -28,8 +28,8 @@ Re-test (4 October, commit 8900bec)
 | E10 | No scanf or getchar left in the module | PASS: uses readInt, readString, readDouble |
 Note: the old test_employee.c still reads its own menu with scanf, so it can show "input cannot be empty" after a menu choice. This affects only that test file, not employees.c.
 
-## Menu (main.c + validation.c) - owner: Student 6
-Build: PASS, no warnings
+## Menu (main.c) and validation (validation.c) - owner: Student 6
+First test (menu with placeholders)
 | ID | Test | Result |
 |----|------|--------|
 | M1 | Choices 1 and 3 | PASS |
@@ -37,7 +37,12 @@ Build: PASS, no warnings
 | M3 | abc | PASS (error, asks again) |
 | M4 | Empty input | PASS (error, asks again) |
 | M5 | Exit (6) | PASS |
-Note: options 1-5 are placeholders and are not connected to the modules.
+| M6 | Options 1-5 call real modules | FAIL: placeholders only |
+
+Re-test (4 October, commit 581d199)
+| ID | Test | Result |
+|----|------|--------|
+| M6b | Options 1-5 open the real modules and sub-menus | PASS |
 
 ## Validation helpers (validation.c, tested with test_validation.c) - Student 6 / Student 7
 | ID | Test | Result |
@@ -68,7 +73,6 @@ Re-test (3 October, after Student 3's update)
 | S7b | Duplicate ID | PASS: "Supplier ID already exists", asks again |
 | S8b | Letters typed for ID | PASS: asks again (now uses readInt) |
 | I1b | Linked with main.c | PASS: main() clash removed |
-Note: suppliers.c now needs validation.c to link.
 
 ## Budget (budget.c) - owner: Student 2
 First test: build FAIL (missing closing brace at the end of loadBudgetsFromFile)
@@ -104,13 +108,31 @@ Re-test (3 October, commit ea0f0aa)
 | A3 | Display, search found and not found | PASS |
 | A4 | Letters typed for an ID | PASS: asks again |
 
-## Integration
+## Reports (reports.c) - owner: Student 5 (commits 2240c1b, d933f30)
 | ID | Test | Result |
 |----|------|--------|
-| I2 | main, validation, employees, suppliers, budget, assets built together | PASS: no warnings |
-| I3 | Menu options 1-5 call real modules | FAIL: placeholders only (Student 6) |
-| I4 | Reports module present | FAIL: reports.c not yet submitted (Student 5) |
+| R1 | Compiles with strict flags | PASS |
+| R2 | Employee report: salaries 20000, 15000, 40000 | PASS: average 25000, highest 40000, lowest 15000 |
+| R3 | Budget report | PASS: totals, remaining, over-budget department listed |
+| R4 | Supplier and asset reports | PASS |
+| R5 | All reports with no data | PASS: "No ... registered" |
+
+## Integration (4 October 2026, commit 581d199)
+| ID | Test | Result |
+|----|------|--------|
+| I2 | All 7 .c files built together with strict flags | PASS: no warnings |
+| I3 | Menu options 1-5 open the real modules | PASS |
+| I4 | Menu: 0, 9, letters, empty input | PASS: error shown, asks again |
+| I5 | Employees: duplicate ID, letters, search | PASS |
+| I6 | Budget: "Health Dept" 50000 allocated, 60000 spent | PASS: EXCEEDED, 10000.00 over |
+| I7 | Suppliers and Assets: add, display, search | PASS |
+| I8 | Employee report: 20000, 15000, 40000 | PASS: average 25000, highest 40000, lowest 15000 |
+| I9 | Budget, supplier and asset reports | PASS |
+| I10 | All reports with no data | PASS: "No ... registered" |
+| I11 | Capacity: 10 suppliers, 100 assets, 100 employees | PASS: "full" message, no crash |
+| I12 | Very long and invalid input, run with memory checks on | PASS: rejected, no crash |
+| I13 | Full run on the tester's own PC | PASS |
 
 ## Issues still open
-1. Menu options 1-5 are not connected to the modules (Student 6).
-2. reports.c has not been submitted (Student 5).
+None.
+
